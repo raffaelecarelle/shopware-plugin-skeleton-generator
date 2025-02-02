@@ -1,0 +1,17 @@
+services:
+    php:
+        container_name: application
+        command:
+            - tail
+            - -f
+            - /dev/null
+        build:
+            context: .docker
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            PHP_IDE_CONFIG: "serverName=PhpUnitGenerator"
+            SYMFONY_DEPRECATIONS_HELPER: disabled
+        volumes:
+            - .:/home/application/projects
+            - ~/.composer:/home/application/.composer
