@@ -1,9 +1,9 @@
-<? echo '<?php' ?>
+<?php echo '<?php declare(strict_types=1)'; ?>;
 
-namespace <? echo $namespace ?>;
+namespace <?php echo $namespace; ?>;
 
 use Shopware\Core\Framework\Plugin;
 
-class <? echo $pluginName ?> extends Plugin
+class <?php echo $pluginName; ?> extends Plugin
 {
 }

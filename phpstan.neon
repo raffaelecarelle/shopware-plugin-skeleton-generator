@@ -8,4 +8,5 @@ parameters:
         - %currentWorkingDirectory%/tests
     excludePaths:
     	analyseAndScan:
+    		- %currentWorkingDirectory%/src/Resources/skeletons/*
     		- %currentWorkingDirectory%/tests/Fixture/*
