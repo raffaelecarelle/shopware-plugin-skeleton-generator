@@ -6,6 +6,8 @@ The Shopware Plugin Skeleton Generator is a powerful tool designed to streamline
 
 ```console
 $ composer require --dev raffaelecarelle/shopware-plugin-skeleton-generator
+$ bin/console plugin:refresh
+$ bin/console plugin:install SkeletonGenerator --activate
 ```
 
 
