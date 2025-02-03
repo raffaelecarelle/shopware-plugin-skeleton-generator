@@ -45,7 +45,7 @@ class Generator
             $pluginClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/PluginClass.tpl.php', [
                 'namespace' => $namespace,
                 'pluginName' => $pluginName,
-                'additionalBundleName' => $additionalBundles,
+                'additionalBundles' => $additionalBundles,
             ]);
 
             $this->dump($pluginDir . '/' . $pluginName . '/src/' . $pluginName . '.php', $pluginClassContent);
@@ -74,24 +74,23 @@ class Generator
             $this->dump($pluginDir . '/' . $pluginName . '/tests/TestBootstrap.php', $testBootstrapContent);
 
             if ([] === $additionalBundles) {
-                $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php', [
-                    'withStorefront' => ! $headless,
-                    'withAdmin' => true,
-                ]);
+                $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php');
 
                 $this->dump("$pluginDir/$pluginName/src/Resources/config/routes.xml", $routesContent);
 
                 $servicesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
                     'namespace' => $namespace,
                     'pluginName' => $pluginName,
-                    'additionalBundleName' => [],
+                    'additionalBundleName' => false,
                 ]);
 
                 $this->dump("$pluginDir/$pluginName/src/Resources/config/services.xml", $servicesContent);
+                $this->dump("$pluginDir/$pluginName/src/Controller/.gitkeep", '');
+                $this->dump("$pluginDir/$pluginName/src/Route/.gitkeep", '');
             }
         }
 
-        $this->appendAdditionalBundles($additionalBundles, $namespace, $pluginDir, $pluginName, $headless);
+        $this->appendAdditionalBundles($additionalBundles, $namespace, $pluginDir, $pluginName);
 
         return $pluginDir . '/' . $pluginName;
     }
@@ -99,7 +98,7 @@ class Generator
     /**
      * @param string[] $additionalBundles
      */
-    private function appendAdditionalBundles(array $additionalBundles, string $namespace, string $pluginDir, string $pluginName, bool $headless): void
+    private function appendAdditionalBundles(array $additionalBundles, string $namespace, string $pluginDir, string $pluginName): void
     {
         foreach ($additionalBundles as $additionalBundle) {
             $sectionBundleClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/AdditionalBundle.tpl.php', [
@@ -109,19 +108,19 @@ class Generator
 
             $this->dump("$pluginDir/$pluginName/src/$additionalBundle/$pluginName$additionalBundle.php", $sectionBundleClassContent);
 
-            $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php', [
-                'withStorefront' => ! $headless,
-                'withAdmin' => 'Administration' === $additionalBundle,
-            ]);
+            $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php');
 
             $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/routes.xml", $routesContent);
 
             $servicesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
                 'namespace' => $namespace . '\\' . $pluginName . $additionalBundle,
                 'pluginName' => $pluginName . $additionalBundle,
+                'additionalBundleName' => $additionalBundle,
             ]);
 
             $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/services.xml", $servicesContent);
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Controller/.gitkeep", '');
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Route/.gitkeep", '');
         }
     }
 

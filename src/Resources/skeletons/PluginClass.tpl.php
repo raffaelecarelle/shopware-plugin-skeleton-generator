@@ -6,12 +6,12 @@ use Shopware\Core\Framework\Plugin;
 
 class <?php echo $pluginName; ?> extends Plugin
 {
-    <?php if ([] !== $additionalBundleName) { ?>
+    <?php if ([] !== $additionalBundles) { ?>
     #[\Override]
     public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
     {
         <?php echo "return [\n"; ?>
-            <?php foreach ($additionalBundleName as $bundleName) {?>
+            <?php foreach ($additionalBundles as $bundleName) {?>
             new<?php echo $bundleName; ?>(),
             <?php } ?>
         <?php echo '];'; ?>

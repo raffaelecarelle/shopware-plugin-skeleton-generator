@@ -9,7 +9,7 @@ use Override;
 class SimplePhpTemplateRender implements TemplateRenderInterface
 {
     #[Override]
-    public function render(string $templatePath, array $parameters): string
+    public function render(string $templatePath, array $parameters = []): string
     {
         ob_start();
         extract($parameters, \EXTR_SKIP);

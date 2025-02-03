@@ -56,6 +56,14 @@ class PluginSkeletonGenerateCommand extends Command
             return self::FAILURE;
         }
 
+        foreach ($additionalBundle as $bundle) {
+            if (false === Str::isPascalCase($bundle)) {
+                $output->writeln('<error>The additional bundle names must be in PascalCase</error>');
+
+                return self::FAILURE;
+            }
+        }
+
         $pluginName = Autoload::extractClassName($fqpn);
         $namespace = Autoload::extractNamespace($fqpn);
 

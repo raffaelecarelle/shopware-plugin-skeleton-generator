@@ -7,6 +7,10 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false"/>
 
-        <prototype namespace="<?php echo $namespace; ?>\" resource="../" exclude="../{DependencyInjection,Entity,<?php echo $pluginName; ?>.php}"/>
+        <?php if ($additionalBundleName) { ?>
+        <prototype namespace="<?php echo $namespace; ?>\" resource="../src" exclude="../src/<?php echo $additionalBundleName; ?>{DependencyInjection,Entity,<?php echo $pluginName; ?>.php}"/>
+        <?php } else { ?>
+        <prototype namespace="<?php echo $namespace; ?>\" resource="../src" exclude="../src/{DependencyInjection,Entity,<?php echo $pluginName; ?>.php}"/>
+        <?php } ?>
     </services>
 </container>

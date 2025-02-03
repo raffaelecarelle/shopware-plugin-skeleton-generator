@@ -9,5 +9,5 @@ interface TemplateRenderInterface
     /**
      * @param array<string, mixed> $parameters
      */
-    public function render(string $templatePath, array $parameters): string;
+    public function render(string $templatePath, array $parameters = []): string;
 }

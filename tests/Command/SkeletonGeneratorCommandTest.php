@@ -36,6 +36,32 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/services.xml');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Route/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Controller/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/.php-cs-fixer.dist.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/rector.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan.neon');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan-baseline.neon');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpunit.xml.dist');
+    }
+
+    public function testExecuteWithHeadlessFlag(): void
+    {
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+            '--headless' => true,
+        ], ['capture_stderr_separately' => true]);
+
+        $this->commandTester->assertCommandIsSuccessful();
+
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/tests/TestBootstrap.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/services.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Route/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Controller/.gitkeep');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/.php-cs-fixer.dist.php');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/rector.php');
@@ -59,6 +85,10 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Core/Resources/config/routes.xml');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Resources/config/services.xml');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Resources/config/routes.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Route/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Controller/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Core/Route/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Core/Controller/.gitkeep');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/.php-cs-fixer.dist.php');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/rector.php');

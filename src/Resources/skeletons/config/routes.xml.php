@@ -4,8 +4,6 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <?php if ($withStorefront || $withAdmin) { ?>
     <import resource="../../Controller/**/*Controller.php" type="attribute" />
-    <?php } ?>
     <import resource="../../Route/**/*Route.php" type="attribute" />
 </routes>
