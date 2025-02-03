@@ -107,6 +107,7 @@ class Generator
 
             $sectionBundleClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/AdditionalBundle.tpl.php', [
                 'namespace' => $namespace,
+                'pluginName' => $pluginName,
                 'additionalBundleName' => $additionalBundleName,
             ]);
 

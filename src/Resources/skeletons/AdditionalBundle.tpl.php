@@ -4,6 +4,6 @@ namespace <?php echo $namespace; ?>\<?php echo $additionalBundleName; ?>;
 
 use Shopware\Core\Framework\Bundle;
 
-class <?php echo $additionalBundleName; ?> extends Bundle
+class <?php echo $pluginName . $additionalBundleName; ?> extends Bundle
 {
 }
