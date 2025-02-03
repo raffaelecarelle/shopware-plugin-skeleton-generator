@@ -101,6 +101,37 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertSame('Plugin "Example" already exists.' . "\n", $this->commandTester->getDisplay());
     }
 
+    public function testExecuteAppendOptionWithoutAdditionBundlesShouldGiveError(): void
+    {
+        $fs = new Filesystem();
+
+        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
+
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+            '--append' => true,
+        ], ['capture_stderr_separately' => true]);
+
+        self::assertSame('The additionalBundle option is mandatory with --appen option' . "\n", $this->commandTester->getDisplay());
+    }
+
+    public function testExecuteAppendOption(): void
+    {
+        $fs = new Filesystem();
+
+        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
+
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+            '--append' => true,
+            '--additionalBundle' => ['Elasticsearch'],
+        ], ['capture_stderr_separately' => true]);
+
+        $this->commandTester->assertCommandIsSuccessful();
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

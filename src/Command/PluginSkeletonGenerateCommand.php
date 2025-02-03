@@ -32,18 +32,26 @@ class PluginSkeletonGenerateCommand extends Command
             ->addOption('static', 's', InputOption::VALUE_OPTIONAL, 'Check if the plugin is static', false)
             ->addOption('headless', 'h', InputOption::VALUE_OPTIONAL, 'Check if the plugin is compatible for headless project (without Storefront module)', false)
             ->addOption('additionalBundle', 'ab', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Create an additional bundle for section like Storefront, Administration, Core, Elasticsearch ecc.', [])
+            ->addOption('append', null, InputOption::VALUE_OPTIONAL, 'Update an existing bundle appending one or more additional bundle ("additionalBundle" option is mandatory in this case)', false)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $fqpn = $input->getArgument('fullyQualifiedPluginName');
-        $static = $input->getOption('static');
-        $headless = $input->getOption('headless');
+        $static = (bool) $input->getOption('static');
+        $headless = (bool) $input->getOption('headless');
         $additionalBundle = $input->getOption('additionalBundle') ?? [];
+        $append = (bool) $input->getOption('append');
 
         if (null === $fqpn || ! Autoload::isValidNamespace($fqpn)) {
             $output->writeln('<error>The plugin name (FQN) must be in a valid namespace (ex. Valid\\\Namespace\\\PluginName)</error>');
+
+            return self::FAILURE;
+        }
+
+        if ($append && [] === $additionalBundle) {
+            $output->writeln('<error>The additionalBundle option is mandatory with --appen option</error>');
 
             return self::FAILURE;
         }
@@ -64,6 +72,7 @@ class PluginSkeletonGenerateCommand extends Command
                 $additionalBundle,
                 $headless,
                 $static,
+                $append,
             );
 
             $this->linter->lint($pluginPath);
