@@ -1,15 +1,15 @@
 {
-    "name": "<? echo $pluginName ?>",
+    "name": "<?php echo $pluginName; ?>",
     "description": "",
     "type": "shopware-platform-plugin",
     "version": "1.0.0",
     "license": "MIT",
     "require": {
-        "shopware/core": "<? echo $shopwareVersion ?>",
-        "shopware/administration": "<? echo $shopwareVersion ?>"
-        <? if (class_exists(Shopware\Storefront\Storefront::class)): ?>
-        "shopware/storefront": "<? echo $shopwareVersion ?>"
-        <? endif; ?>
+        "shopware/core": "<?php echo $shopwareVersion; ?>",
+        "shopware/administration": "<?php echo $shopwareVersion; ?>"
+        <?php if ($withStorefront) { ?>
+        "shopware/storefront": "<?php echo $shopwareVersion; ?>"
+        <?php } ?>
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "<? echo $namespace ?>\\": "src/"
+            "<?php echo $namespace; ?>\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "<? echo $namespace ?>\\Tests\\": "tests/"
+            "<?php echo $namespace; ?>\\Tests\\": "tests/"
         }
     },
     "config": {
@@ -39,7 +39,7 @@
         }
     },
     "extra": {
-        "shopware-plugin-class": "<? echo $namespace ?>\\<? echo $pluginName ?>",
+        "shopware-plugin-class": "<?php echo $namespace; ?>\\<?php echo $pluginName; ?>",
         "plugin-icon": "src/Resources/config/plugin-icon.png",
         "copyright": "(c) by Qaplá SRL",
         "label": {
