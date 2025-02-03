@@ -41,7 +41,7 @@ class Generator
             throw new Exception(\sprintf('Plugin "%s" already exists.', $pluginName));
         }
 
-        if ($append && !$this->filesystem->exists($pluginDir . '/' . $pluginName)) {
+        if ($append && ! $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
             throw new Exception(\sprintf('Plugin "%s" does not exist. Cannot append bundles!', $pluginName));
         }
 
