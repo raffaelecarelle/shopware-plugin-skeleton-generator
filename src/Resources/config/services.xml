@@ -7,7 +7,7 @@
     <services>
         <service id="ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand">
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Generator\Generator"/>
-            <argument type="service" id="PhpLinter"/>
+            <argument type="service" id="ShopwarePluginSkeletonGenerator\Linter\PhpLinter"/>
             <tag name="console.command"/>
         </service>
 
