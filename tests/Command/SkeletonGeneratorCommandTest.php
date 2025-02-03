@@ -50,6 +50,7 @@ class SkeletonGeneratorCommandTest extends TestCase
             'fullyQualifiedPluginName' => Example::class,
             '--additionalBundle' => ['Core', 'Administration'],
         ], ['capture_stderr_separately' => true]);
+
         $this->commandTester->assertCommandIsSuccessful();
 
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
@@ -63,6 +64,27 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan.neon');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan-baseline.neon');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpunit.xml.dist');
+    }
+
+    public function testExecuteWithStaticFlag(): void
+    {
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+            '--static' => true,
+        ], ['capture_stderr_separately' => true]);
+
+        $this->commandTester->assertCommandIsSuccessful();
+
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Example.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Resources/config/services.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Resources/config/routes.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/composer.json');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/.php-cs-fixer.dist.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/rector.php');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpstan.neon');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpstan-baseline.neon');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpunit.xml.dist');
     }
 
     protected function setUp(): void

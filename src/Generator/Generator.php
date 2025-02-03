@@ -33,7 +33,7 @@ class Generator
         $pluginDir = $this->kernelPluginLoader->getPluginDir($this->projectDir);
 
         if ($static) {
-            $pluginDir .= '/../static-plugins';
+            $pluginDir = \dirname($pluginDir) . '/static-plugins';
         }
 
         if ($this->filesystem->exists($pluginDir . '/' . $pluginName)) {

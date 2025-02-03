@@ -62,8 +62,8 @@ class PluginSkeletonGenerateCommand extends Command
                 $namespace,
                 $pluginName,
                 $additionalBundle,
-                $static,
                 $headless,
+                $static,
             );
 
             $this->linter->lint($pluginPath);
