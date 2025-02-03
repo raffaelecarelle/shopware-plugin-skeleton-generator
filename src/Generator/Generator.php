@@ -66,6 +66,13 @@ class Generator
             $this->copy(__DIR__ . '/../Resources/skeletons/config/phpstan-baseline.neon', $pluginDir . '/' . $pluginName . '/phpstan-baseline.neon');
             $this->copy(__DIR__ . '/../Resources/skeletons/config/phpunit.xml.dist', $pluginDir . '/' . $pluginName . '/phpunit.xml.dist');
 
+            $testBootstrapContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/TestBootstrap.tpl.php', [
+                'namespace' => $namespace,
+                'pluginName' => $pluginName
+            ]);
+
+            $this->dump($pluginDir . '/' . $pluginName . '/tests/TestBootstrap.php', $testBootstrapContent);
+
             if ([] === $additionalBundles) {
                 $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php', [
                     'withStorefront' => ! $headless,

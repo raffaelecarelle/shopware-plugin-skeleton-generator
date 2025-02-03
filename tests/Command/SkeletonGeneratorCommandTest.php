@@ -32,6 +32,7 @@ class SkeletonGeneratorCommandTest extends TestCase
         $this->commandTester->execute(['fullyQualifiedPluginName' => Example::class], ['capture_stderr_separately' => true]);
         $this->commandTester->assertCommandIsSuccessful();
 
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/tests/TestBootstrap.php');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/services.xml');
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml');
