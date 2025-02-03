@@ -1,14 +1,14 @@
 {
-    "name": "<?php echo $pluginName; ?>",
+    "name": "<?php echo $pluginNameWithDash; ?>/<?php echo $pluginNameWithDash; ?>",
     "description": "",
     "type": "shopware-platform-plugin",
     "version": "1.0.0",
     "license": "MIT",
     "require": {
-        "shopware/core": "<?php echo $shopwareVersion; ?>",
-        "shopware/administration": "<?php echo $shopwareVersion; ?>"
+        "shopware/core": "~<?php echo $shopwareVersion; ?>",
+        "shopware/administration": "~<?php echo $shopwareVersion; ?>",
         <?php if ($withStorefront) { ?>
-        "shopware/storefront": "<?php echo $shopwareVersion; ?>"
+        "shopware/storefront": "~<?php echo $shopwareVersion; ?>"
         <?php } ?>
     },
     "require-dev": {
@@ -41,7 +41,7 @@
     "extra": {
         "shopware-plugin-class": "<?php echo $namespace; ?>\\<?php echo $pluginName; ?>",
         "plugin-icon": "src/Resources/config/plugin-icon.png",
-        "copyright": "(c) by Qaplá SRL",
+        "copyright": "(c) by YourCompany",
         "label": {
             "de-DE": "de label",
             "en-GB": "en label"

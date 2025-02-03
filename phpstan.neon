@@ -9,4 +9,7 @@ parameters:
     excludePaths:
     	analyseAndScan:
     		- %currentWorkingDirectory%/src/Resources/skeletons/*
-    		- %currentWorkingDirectory%/tests/Fixture/*
+    		- %currentWorkingDirectory%/tests/Fixtures/*
+    ignoreErrors:
+        - identifier: ternary.shortNotAllowed
+

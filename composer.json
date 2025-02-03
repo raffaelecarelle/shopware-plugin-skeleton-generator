@@ -1,7 +1,8 @@
 {
     "name": "raffaelecarelle/shopware-plugin-skeleton-generator",
     "description": "A tool to generate a standardized skeleton structure for developing Shopware plugins, enabling developers to quickly start and streamline the development process.",
-    "type": "library",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.0",
     "license": "MIT",
     "authors": [
         {
@@ -41,8 +42,22 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
+        "shopware-plugin-class": "ShopwarePluginSkeletonGenerator\\PluginSkeletonGenerator",
+        "label": {
+            "de-DE": "PluginSkeletonGenerator",
+            "en-GB": "PluginSkeletonGenerator"
+        },
+        "description": {
+            "de-DE": "",
+            "en-GB": ""
+        },
+        "manufacturerLink": {
+            "de-DE": "",
+            "en-GB": ""
+        },
+        "supportLink": {
+            "de-DE": "",
+            "en-GB": ""
         }
     }
 }

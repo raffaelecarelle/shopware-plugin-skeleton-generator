@@ -5,8 +5,18 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="ShopwarePluginSkeletonGenerator\Command\SkeletonGeneratorCommand">
+        <service id="PluginSkeletonGeneratorCommand">
             <tag name="console.command"/>
+        </service>
+
+        <service id="ShopwarePluginSkeletonGenerator\Generator\Generator">
+            <argument type="service" id="Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader"/>
+            <argument type="service" id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender"/>
+            <argument type="service" id="filesystem"/>
+            <argument>%kernel.project_dir%%</argument>
+        </service>
+
+        <service id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender">
         </service>
     </services>
 </container>
