@@ -89,7 +89,7 @@ class Generator
 
         $this->filesystem->dumpFile($pluginDir . '/' . $pluginName . '/src/' . $pluginName . '.php', $pluginClass);
 
-        $composerJson = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/composer.json.php', [
+        $composerJsonContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/composer.json.php', [
             'namespace' => $namespace,
             'withStorefront' => ! $headless,
             'pluginNameWithDash' => Str::camelCaseToDash($pluginName),
@@ -97,14 +97,24 @@ class Generator
             'shopwareVersion' => Autoload::getShopwareInstalledVersion(),
         ]);
 
-        $this->filesystem->dumpFile($pluginDir . '/' . $pluginName . '/composer.json', $composerJson);
+        $this->dump($pluginDir . '/' . $pluginName . '/composer.json', $composerJsonContent);
 
-        $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/.php-cs-fixer.dist.php', $pluginDir . '/' . $pluginName . '/.php-cs-fixer.dist.php');
-        $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/rector.php', $pluginDir . '/' . $pluginName . '/rector.php');
-        $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpstan.neon', $pluginDir . '/' . $pluginName . '/phpstan.neon');
-        $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpstan-baseline.neon', $pluginDir . '/' . $pluginName . '/phpstan-baseline.neon');
-        $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpunit.xml.dist', $pluginDir . '/' . $pluginName . '/phpunit.xml.dist');
+        $this->copy(__DIR__ . '/../Resources/skeletons/config/.php-cs-fixer.dist.php', $pluginDir . '/' . $pluginName . '/.php-cs-fixer.dist.php');
+        $this->copy(__DIR__ . '/../Resources/skeletons/config/rector.php', $pluginDir . '/' . $pluginName . '/rector.php');
+        $this->copy(__DIR__ . '/../Resources/skeletons/config/phpstan.neon', $pluginDir . '/' . $pluginName . '/phpstan.neon');
+        $this->copy(__DIR__ . '/../Resources/skeletons/config/phpstan-baseline.neon', $pluginDir . '/' . $pluginName . '/phpstan-baseline.neon');
+        $this->copy(__DIR__ . '/../Resources/skeletons/config/phpunit.xml.dist', $pluginDir . '/' . $pluginName . '/phpunit.xml.dist');
 
         return $pluginDir . '/' . $pluginName;
+    }
+
+    private function dump(string $path, string $content): void
+    {
+        $this->filesystem->dumpFile($path, $content);
+    }
+
+    private function copy(string $origFile, string $destFile): void
+    {
+        $this->filesystem->copy($origFile, $destFile);
     }
 }
