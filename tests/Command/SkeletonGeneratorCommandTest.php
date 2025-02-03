@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
+use ShopwarePluginSkeletonGenerator\Linter\PhpLinter;
 use ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
@@ -45,6 +46,7 @@ class SkeletonGeneratorCommandTest extends TestCase
                 new Filesystem(),
                 __DIR__ . '/../Fixtures',
             ),
+            new PhpLinter(),
         ));
     }
 

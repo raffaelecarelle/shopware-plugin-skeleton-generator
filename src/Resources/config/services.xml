@@ -5,7 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="PluginSkeletonGeneratorCommand">
+        <service id="ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand">
+            <argument type="service" id="ShopwarePluginSkeletonGenerator\Generator\Generator"/>
+            <argument type="service" id="PhpLinter"/>
             <tag name="console.command"/>
         </service>
 
@@ -14,6 +16,9 @@
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender"/>
             <argument type="service" id="filesystem"/>
             <argument>%kernel.project_dir%%</argument>
+        </service>
+
+        <service id="PhpLinter">
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender">

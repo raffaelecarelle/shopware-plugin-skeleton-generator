@@ -29,7 +29,7 @@ class Generator
         array $additionalBundles,
         bool $headless = false,
         bool $static = false,
-    ): void {
+    ): string {
         $pluginDir = $this->kernelPluginLoader->getPluginDir($this->projectDir);
 
         if ($static) {
@@ -88,5 +88,7 @@ class Generator
         $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpstan.neon', $pluginDir . '/' . $pluginName . '/phpstan.neon');
         $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpstan-baseline.neon', $pluginDir . '/' . $pluginName . '/phpstan-baseline.neon');
         $this->filesystem->copy(__DIR__ . '/../Resources/skeletons/config/phpunit.xml.dist', $pluginDir . '/' . $pluginName . '/phpunit.xml.dist');
+
+        return $pluginDir . '/' . $pluginName;
     }
 }

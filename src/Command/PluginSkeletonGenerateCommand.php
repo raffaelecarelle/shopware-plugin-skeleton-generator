@@ -6,6 +6,7 @@ namespace ShopwarePluginSkeletonGenerator\Command;
 
 use Exception;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
+use ShopwarePluginSkeletonGenerator\Linter\LinterInterface;
 use ShopwarePluginSkeletonGenerator\Util\Autoload;
 use ShopwarePluginSkeletonGenerator\Util\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -19,6 +20,7 @@ class PluginSkeletonGenerateCommand extends Command
 {
     public function __construct(
         private readonly Generator $generator,
+        private readonly LinterInterface $linter,
     ) {
         parent::__construct();
     }
@@ -26,7 +28,7 @@ class PluginSkeletonGenerateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('fullyQualifiedPluginName', InputOption::VALUE_REQUIRED, 'The plugin name')
+            ->addArgument('fullyQualifiedPluginName', InputOption::VALUE_REQUIRED, 'The FQN plugin name (ex. Valid\\Namespace\\PluginName)')
             ->addOption('static', 's', InputOption::VALUE_OPTIONAL, 'Check if the plugin is static', false)
             ->addOption('headless', 'h', InputOption::VALUE_OPTIONAL, 'Check if the plugin is compatible for headless project (without Storefront module)', false)
             ->addOption('additionalBundle', 'ab', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Create an additional bundle for section like Storefront, Administration, Core, Elasticsearch ecc.', [])
@@ -56,13 +58,15 @@ class PluginSkeletonGenerateCommand extends Command
         }
 
         try {
-            $this->generator->generate(
+            $pluginPath = $this->generator->generate(
                 $namespace,
                 $pluginName,
                 $additionalBundle,
                 $static,
                 $headless,
             );
+
+            $this->linter->lint($pluginPath);
         } catch (Exception $e) {
             $output->writeln("<error>{$e->getMessage()}</error>");
 
