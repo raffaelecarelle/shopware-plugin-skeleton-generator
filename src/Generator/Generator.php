@@ -68,7 +68,7 @@ class Generator
 
             $testBootstrapContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/TestBootstrap.tpl.php', [
                 'namespace' => $namespace,
-                'pluginName' => $pluginName
+                'pluginName' => $pluginName,
             ]);
 
             $this->dump($pluginDir . '/' . $pluginName . '/tests/TestBootstrap.php', $testBootstrapContent);

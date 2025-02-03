@@ -6,9 +6,9 @@ use Shopware\Core\TestBootstrapper;
 
 $loader = (new TestBootstrapper())
     ->addCallingPlugin()
-    ->addActivePlugins('<?php echo $pluginName ?>')
+    ->addActivePlugins('<?php echo $pluginName; ?>')
     ->setForceInstallPlugins(true)
     ->bootstrap()
     ->getClassLoader();
 
-$loader->addPsr4('<?php echo $namespace ?>\\Tests\\', __DIR__);
+$loader->addPsr4('<?php echo $namespace; ?>\\Tests\\', __DIR__);
