@@ -51,7 +51,7 @@ final class PhpLinter implements LinterInterface
     {
         // Use Bundled PHP-CS-Fixer
         if (null === $this->phpCsFixerBinaryPath) {
-            $this->phpCsFixerBinaryPath = \sprintf('%s/Resources/bin/php-cs-fixer.phar', __DIR__);
+            $this->phpCsFixerBinaryPath = \sprintf('%s/Resources/bin/php-cs-fixer.phar', \dirname(__DIR__));
 
             return;
         }

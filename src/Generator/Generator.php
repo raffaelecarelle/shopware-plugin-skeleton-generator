@@ -40,29 +40,45 @@ class Generator
             throw new Exception('Plugin already exists');
         }
 
-        foreach ($additionalBundles as $additionalBundle) {
-            $this->filesystem->mkdir($pluginDir . '/' . $pluginName . '/src/' . $additionalBundle);
-            $sectionBundleClass = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/AdditionalBundle.tpl.php', [
-                'namespace' => $namespace,
-                'additionalBundleName' => $additionalBundle,
-            ]);
-
-            $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/$pluginName$additionalBundle.php", $sectionBundleClass);
-
+        if ([] === $additionalBundles) {
             $routes = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php', [
                 'withStorefront' => ! $headless,
-                'withAdmin' => 'Administration' === $additionalBundle,
+                'withAdmin' => true,
             ]);
 
-            $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/routes.xml", $routes);
+            $this->filesystem->dumpFile("$pluginDir/$pluginName/src/Resources/config/routes.xml", $routes);
 
             $services = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
                 'namespace' => $namespace,
                 'pluginName' => $pluginName,
-                'additionalBundleName' => $additionalBundle,
+                'additionalBundleName' => [],
             ]);
 
-            $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/services.xml", $services);
+            $this->filesystem->dumpFile("$pluginDir/$pluginName/src/Resources/config/services.xml", $services);
+        } else {
+            foreach ($additionalBundles as $additionalBundle) {
+                $this->filesystem->mkdir($pluginDir . '/' . $pluginName . '/src/' . $additionalBundle);
+                $sectionBundleClass = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/AdditionalBundle.tpl.php', [
+                    'namespace' => $namespace,
+                    'additionalBundleName' => $additionalBundle,
+                ]);
+
+                $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/$pluginName$additionalBundle.php", $sectionBundleClass);
+
+                $routes = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php', [
+                    'withStorefront' => ! $headless,
+                    'withAdmin' => 'Administration' === $additionalBundle,
+                ]);
+
+                $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/routes.xml", $routes);
+
+                $services = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
+                    'namespace' => $namespace . '\\' . $pluginName . $additionalBundle,
+                    'pluginName' => $pluginName . $additionalBundle,
+                ]);
+
+                $this->filesystem->dumpFile("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/services.xml", $services);
+            }
         }
 
         $pluginClass = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/PluginClass.tpl.php', [

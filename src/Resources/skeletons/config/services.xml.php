@@ -7,6 +7,6 @@
     <services>
         <defaults autowire="true" autoconfigure="true" public="false"/>
 
-        <prototype namespace="<?php echo $namespace; ?>\<?php echo $additionalBundleName; ?>\" resource="../" exclude="../{DependencyInjection,Entity,<?php echo $pluginName . $additionalBundleName; ?>.php}"/>
+        <prototype namespace="<?php echo $namespace; ?>\" resource="../" exclude="../{DependencyInjection,Entity,<?php echo $pluginName; ?>.php}"/>
     </services>
 </container>
