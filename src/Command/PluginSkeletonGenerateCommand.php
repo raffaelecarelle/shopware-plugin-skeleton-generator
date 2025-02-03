@@ -30,7 +30,7 @@ class PluginSkeletonGenerateCommand extends Command
         $this
             ->addArgument('fullyQualifiedPluginName', InputOption::VALUE_REQUIRED, 'The FQN plugin name (ex. Valid\\Namespace\\PluginName)')
             ->addOption('static', 's', InputOption::VALUE_OPTIONAL, 'Check if the plugin is static', false)
-            ->addOption('headless', 'h', InputOption::VALUE_OPTIONAL, 'Check if the plugin is compatible for headless project (without Storefront module)', false)
+            ->addOption('headless', 'H', InputOption::VALUE_OPTIONAL, 'Check if the plugin is compatible for headless project (without Storefront module)', false)
             ->addOption('additionalBundle', 'ab', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Create an additional bundle for section like Storefront, Administration, Core, Elasticsearch ecc.', [])
             ->addOption('append', null, InputOption::VALUE_OPTIONAL, 'Update an existing bundle appending one or more additional bundle ("additionalBundle" option is mandatory in this case)', false)
         ;
