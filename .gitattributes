@@ -1,5 +1,5 @@
 .github                          export-ignore
-docker                           export-ignore
+.docker                          export-ignore
 tests                            export-ignore
 .gitattributes                   export-ignore
 .gitignore                       export-ignore
@@ -11,3 +11,4 @@ phpstan.neon                     export-ignore
 phpstan-baseline.neon            export-ignore
 phpunit.xml.dist                 export-ignore
 rector.php                       export-ignore
+.editorconfig                    export-ignore
