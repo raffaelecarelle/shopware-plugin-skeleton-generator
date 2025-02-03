@@ -87,6 +87,20 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpunit.xml.dist');
     }
 
+    public function testExecutePluginAlreadyExistsShouldDoNothing(): void
+    {
+        $fs = new Filesystem();
+
+        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
+
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+        ], ['capture_stderr_separately' => true]);
+
+        self::assertSame('Plugin "Example" already exists.' . "\n", $this->commandTester->getDisplay());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
