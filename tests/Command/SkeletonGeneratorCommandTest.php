@@ -147,6 +147,18 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertSame('The additionalBundle option is mandatory with --appen option' . "\n", $this->commandTester->getDisplay());
     }
 
+    public function testExecuteAppendOptionNonExistentPluginShouldGiveError(): void
+    {
+        $this->commandTester->execute([
+            // @phpstan-ignore-next-line
+            'fullyQualifiedPluginName' => Example::class,
+            '--append' => true,
+            '--additionalBundle' => ['Elasticsearch'],
+        ], ['capture_stderr_separately' => true]);
+
+        self::assertSame('Plugin "Example" does not exist. Cannot append bundles!' . "\n", $this->commandTester->getDisplay());
+    }
+
     public function testExecuteAppendOption(): void
     {
         $fs = new Filesystem();
