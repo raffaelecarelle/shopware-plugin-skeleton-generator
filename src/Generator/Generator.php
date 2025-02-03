@@ -51,7 +51,7 @@ class Generator
             $this->dump($pluginDir . '/' . $pluginName . '/src/' . $pluginName . '.php', $pluginClassContent);
 
             $composerJsonContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/composer.json.php', [
-                'namespace' => $namespace,
+                'namespace' => str_replace('\\', '\\\\', $namespace),
                 'withStorefront' => ! $headless,
                 'pluginNameWithDash' => Str::camelCaseToDash($pluginName),
                 'pluginName' => $pluginName,
@@ -67,7 +67,7 @@ class Generator
             $this->copy(__DIR__ . '/../Resources/skeletons/config/phpunit.xml.dist', $pluginDir . '/' . $pluginName . '/phpunit.xml.dist');
 
             $testBootstrapContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/TestBootstrap.tpl.php', [
-                'namespace' => $namespace,
+                'namespace' => str_replace('\\', '\\\\', $namespace),
                 'pluginName' => $pluginName,
             ]);
 
