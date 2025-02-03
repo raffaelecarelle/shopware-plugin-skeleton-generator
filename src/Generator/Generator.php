@@ -100,27 +100,31 @@ class Generator
      */
     private function appendAdditionalBundles(array $additionalBundles, string $namespace, string $pluginDir, string $pluginName): void
     {
-        foreach ($additionalBundles as $additionalBundle) {
+        foreach ($additionalBundles as $additionalBundleName) {
+            if ($this->filesystem->exists("$pluginDir/$pluginName/src/$additionalBundleName")) {
+                continue;
+            }
+
             $sectionBundleClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/AdditionalBundle.tpl.php', [
                 'namespace' => $namespace,
-                'additionalBundleName' => $additionalBundle,
+                'additionalBundleName' => $additionalBundleName,
             ]);
 
-            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/$pluginName$additionalBundle.php", $sectionBundleClassContent);
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/$pluginName$additionalBundleName.php", $sectionBundleClassContent);
 
             $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php');
 
-            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/routes.xml", $routesContent);
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Resources/config/routes.xml", $routesContent);
 
             $servicesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
-                'namespace' => $namespace . '\\' . $pluginName . $additionalBundle,
-                'pluginName' => $pluginName . $additionalBundle,
-                'additionalBundleName' => $additionalBundle,
+                'namespace' => $namespace . '\\' . $pluginName . $additionalBundleName,
+                'pluginName' => $pluginName . $additionalBundleName,
+                'additionalBundleName' => $additionalBundleName,
             ]);
 
-            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Resources/config/services.xml", $servicesContent);
-            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Controller/.gitkeep", '');
-            $this->dump("$pluginDir/$pluginName/src/$additionalBundle/Route/.gitkeep", '');
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Resources/config/services.xml", $servicesContent);
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Controller/.gitkeep", '');
+            $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Route/.gitkeep", '');
         }
     }
 
