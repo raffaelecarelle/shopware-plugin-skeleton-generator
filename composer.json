@@ -52,12 +52,12 @@
             "en-GB": ""
         },
         "manufacturerLink": {
-            "de-DE": "",
-            "en-GB": ""
+            "de-DE": "https://github.com/raffaelecarelle",
+            "en-GB": "https://github.com/raffaelecarelle"
         },
         "supportLink": {
-            "de-DE": "",
-            "en-GB": ""
+            "de-DE": "https://github.com/raffaelecarelle/shopware-plugin-skeleton-generator/issues",
+            "en-GB": "https://github.com/raffaelecarelle/shopware-plugin-skeleton-generator/issues"
         }
     }
 }
