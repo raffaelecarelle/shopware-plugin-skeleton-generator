@@ -15,7 +15,7 @@
             <argument type="service" id="Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader"/>
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender"/>
             <argument type="service" id="filesystem"/>
-            <argument>%kernel.project_dir%%</argument>
+            <argument>%kernel.project_dir%</argument>
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Linter\PhpLinter">
