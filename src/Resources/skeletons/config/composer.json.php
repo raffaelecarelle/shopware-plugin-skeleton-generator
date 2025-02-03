@@ -52,7 +52,7 @@
         },
         "manufacturerLink": {
             "de-DE": "https://www.yoursite.it/",
-            "en-GB": "https://www.yoursite.it/",
+            "en-GB": "https://www.yoursite.it/"
         },
         "supportLink": {
             "de-DE": "https://www.yoursite.it/support/",
