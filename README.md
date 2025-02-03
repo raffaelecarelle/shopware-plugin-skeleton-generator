@@ -15,31 +15,31 @@ $ bin/console plugin:install SkeletonGenerator --activate
 ### Generate new Shopware plugin
 
 ```console
-$ bin/console plugin:skeleton:generate Full\\\Qualified\\\Name\\\Plugin
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName
 ```
 
 ### Generate new Static Shopware plugin
 
 ```console
-$ bin/console plugin:skeleton:generate Full\\\Qualified\\\Name\\\Plugin --static
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --static
 ```
 
 ### Generate new Headless Shopware plugin (without Storefront module)
 
 ```console
-$ bin/console plugin:skeleton:generate Full\\\Qualified\\\Name\\\Plugin --headless
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --headless
 ```
 
 ### Add some additional bundle
 
 ```console
-$ bin/console plugin:skeleton:generate Full\\\Qualified\\\Name\\\Plugin --additionalBundle=Core --additionalBundle=Administration
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --additionalBundle=Core --additionalBundle=Administration
 ```
 
 ### Update existing plugin with new additional bundle
 
 ```console
-$ bin/console plugin:skeleton:generate Full\\\Qualified\\\Name\\\Plugin --append --additionalBundle=Core --additionalBundle=Administration
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --append --additionalBundle=Core --additionalBundle=Administration
 ```
 
 
