@@ -161,6 +161,11 @@ class SkeletonGeneratorCommandTest extends TestCase
         ], ['capture_stderr_separately' => true]);
 
         $this->commandTester->assertCommandIsSuccessful();
+
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Resources/config/services.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Resources/config/routes.xml');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Route/.gitkeep');
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Controller/.gitkeep');
     }
 
     protected function setUp(): void
