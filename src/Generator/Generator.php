@@ -5,20 +5,33 @@ declare(strict_types=1);
 namespace ShopwarePluginSkeletonGenerator\Generator;
 
 use Exception;
+use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\FileGenerator;
+use Laminas\Code\Generator\MethodGenerator;
+use Laminas\Code\Reflection\ClassReflection;
+use Laminas\Code\Reflection\MethodReflection;
+use PhpParser\ParserFactory;
+use PhpParser\PrettyPrinter\Standard;
+use Shopware\Core\Framework\Bundle;
+use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
+use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
 use ShopwarePluginSkeletonGenerator\Render\TemplateRenderInterface;
 use ShopwarePluginSkeletonGenerator\Util\Autoload;
+use ShopwarePluginSkeletonGenerator\Util\CodeManipulator;
 use ShopwarePluginSkeletonGenerator\Util\Str;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Generator
 {
     public function __construct(
-        private readonly KernelPluginLoader $kernelPluginLoader,
+        private readonly KernelPluginLoader      $kernelPluginLoader,
         private readonly TemplateRenderInterface $templateRender,
-        private readonly Filesystem $filesystem,
-        private readonly string $projectDir,
-    ) {}
+        private readonly Filesystem              $filesystem,
+        private readonly string                  $projectDir,
+    )
+    {
+    }
 
     /**
      * @param string[] $additionalBundles
@@ -26,26 +39,27 @@ class Generator
     public function generate(
         string $namespace,
         string $pluginName,
-        array $additionalBundles,
-        bool $headless = false,
-        bool $static = false,
-        bool $append = false,
-    ): string {
+        array  $additionalBundles,
+        bool   $headless = false,
+        bool   $static = false,
+        bool   $append = false,
+    ): string
+    {
         $pluginDir = $this->kernelPluginLoader->getPluginDir($this->projectDir);
 
         if ($static) {
             $pluginDir = \dirname($pluginDir) . '/static-plugins';
         }
 
-        if ( ! $append && $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
+        if (!$append && $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
             throw new Exception(\sprintf('Plugin "%s" already exists.', $pluginName));
         }
 
-        if ($append && ! $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
+        if ($append && !$this->filesystem->exists($pluginDir . '/' . $pluginName)) {
             throw new Exception(\sprintf('Plugin "%s" does not exist. Cannot append bundles!', $pluginName));
         }
 
-        if ( ! $append) {
+        if (!$append) {
             $pluginClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/PluginClass.tpl.php', [
                 'namespace' => $namespace,
                 'pluginName' => $pluginName,
@@ -56,7 +70,7 @@ class Generator
 
             $composerJsonContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/composer.json.php', [
                 'namespace' => str_replace('\\', '\\\\', $namespace),
-                'withStorefront' => ! $headless,
+                'withStorefront' => !$headless,
                 'pluginNameWithDash' => Str::camelCaseToDash($pluginName),
                 'pluginName' => $pluginName,
                 'shopwareVersion' => Autoload::getShopwareInstalledVersion(),
@@ -131,6 +145,12 @@ class Generator
             $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Controller/.gitkeep", '');
             $this->dump("$pluginDir/$pluginName/src/$additionalBundleName/Route/.gitkeep", '');
         }
+
+        $bundles = $this->getExistentAdditionalBundles($namespace . '\\' . $pluginName);
+
+        $additionalBundles = array_unique($additionalBundles + $bundles);
+
+        $this->addAdditionalBundlesToPluginClass($namespace . '\\' . $pluginName, $additionalBundles);
     }
 
     private function dump(string $path, string $content): void
@@ -141,5 +161,59 @@ class Generator
     private function copy(string $origFile, string $destFile): void
     {
         $this->filesystem->copy($origFile, $destFile);
+    }
+
+    private function addAdditionalBundlesToPluginClass(string $existentPluginClass, array $bundles): void
+    {
+        $classRef = new ClassReflection($existentPluginClass);
+        $class = ClassGenerator::fromReflection($classRef);
+        $class->addUse(Plugin::class);
+        $class->addUse(AdditionalBundleParameters::class);
+
+        $method = new MethodGenerator();
+
+        $body = '';
+        if ($class->hasMethod('getAdditionalBundles')) {
+            $method = $class->getMethod('getAdditionalBundles');
+            $body = $method->getBody();
+            $class->removeMethod('getAdditionalBundles');
+        }
+        $additionalBundlesBody = '';
+        foreach ($bundles as $additionalBundle) {
+            $class->addUse($additionalBundle);
+            $additionalBundlesBody .= "\n    new " . Autoload::extractClassName($additionalBundle) . '(),';
+        }
+
+        if (!str_contains($body, 'return')) {
+            $body .= 'return [';
+            $body .= "\n" . $additionalBundlesBody;
+            $body .= "\n];";
+        } else {
+            $body = str_replace("];", <<<EOD
+                    ,$additionalBundlesBody \n ];\n
+                EOD
+                , $body);
+            dump($body);
+        }
+
+//        $method->setDocBlock("/**\n* Method auto-generated by PluginSkeletonGenerator.\n*/");
+        $method->setBody($body);
+
+        $class->addMethodFromGenerator($method);
+
+        $file = new FileGenerator();
+        $file->setClass($class);
+        $this->dump($classRef->getFileName(), $file->generate());
+    }
+
+    private function getExistentAdditionalBundles(string $existentPluginClass)
+    {
+        $classRef = new ClassReflection($existentPluginClass);
+        $addRef = new ClassReflection(AdditionalBundleParameters::class);
+        /** @var Plugin $instance */
+        $instance = $classRef->newInstanceWithoutConstructor();
+        $bundles = $instance->getAdditionalBundles($addRef->newInstanceWithoutConstructor());
+
+        return array_map(fn(Bundle $bundle) => $bundle->getNamespace() . '\\'. $bundle->getName(), $bundles);
     }
 }

@@ -11,8 +11,9 @@
         }
     ],
     "require": {
-        "shopware/core": "v6.6.9.0",
-        "shopware/administration": "v6.6.9.0"
+        "laminas/laminas-code": "^4.16",
+        "shopware/administration": "v6.6.9.0",
+        "shopware/core": "v6.6.9.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
@@ -31,6 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "App\\": "tests/Fixtures/App/",
             "ShopwarePluginSkeletonGenerator\\Tests\\": "tests/"
         }
     },
