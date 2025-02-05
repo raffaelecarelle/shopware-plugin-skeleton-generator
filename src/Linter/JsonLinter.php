@@ -6,7 +6,7 @@ namespace ShopwarePluginSkeletonGenerator\Linter;
 
 use Symfony\Component\Finder\Finder;
 
-class JsonLinter implements LinterInterface
+final class JsonLinter implements LinterInterface
 {
     public function lint(array | string $templateFilePath): void
     {

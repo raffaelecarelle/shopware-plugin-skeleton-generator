@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
+use ShopwarePluginSkeletonGenerator\Linter\ChainLinter;
 use ShopwarePluginSkeletonGenerator\Linter\JsonLinter;
 use ShopwarePluginSkeletonGenerator\Linter\PhpLinter;
 use ShopwarePluginSkeletonGenerator\Linter\XmlLinter;
@@ -548,9 +549,11 @@ class SkeletonGeneratorCommandTest extends TestCase
                 new Filesystem(),
                 __DIR__ . '/../Fixtures',
             ),
-            new PhpLinter(),
-            new XmlLinter(),
-            new JsonLinter(),
+            new ChainLinter([
+                new PhpLinter(),
+                new XmlLinter(),
+                new JsonLinter(),
+            ]),
         ));
     }
 

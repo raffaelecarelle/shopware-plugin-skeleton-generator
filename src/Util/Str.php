@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace ShopwarePluginSkeletonGenerator\Util;
 
-class Str
+/**
+ * @internal
+ */
+final class Str
 {
     public static function isPascalCase(string $string): bool
     {

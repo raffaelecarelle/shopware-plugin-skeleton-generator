@@ -6,7 +6,7 @@ namespace ShopwarePluginSkeletonGenerator\Render;
 
 use Override;
 
-class SimplePhpTemplateRender implements TemplateRenderInterface
+final class SimplePhpTemplateRender implements TemplateRenderInterface
 {
     #[Override]
     public function render(string $templatePath, array $parameters = []): string

@@ -29,7 +29,10 @@ use PhpParser\PrettyPrinter\Standard;
 use PhpParser\Token;
 use RuntimeException;
 
-class CodeManipulator
+/**
+ * @internal
+ */
+final class CodeManipulator
 {
     private const string CONTEXT_OUTSIDE_CLASS = 'outside_class';
 

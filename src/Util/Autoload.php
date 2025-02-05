@@ -6,7 +6,10 @@ namespace ShopwarePluginSkeletonGenerator\Util;
 
 use Composer\InstalledVersions;
 
-class Autoload
+/**
+ * @internal
+ */
+final class Autoload
 {
     public static function extractClassName(string $fullyQualifiedName): string
     {

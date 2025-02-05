@@ -6,7 +6,7 @@ namespace ShopwarePluginSkeletonGenerator\Command;
 
 use Exception;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
-use ShopwarePluginSkeletonGenerator\Linter\LinterInterface;
+use ShopwarePluginSkeletonGenerator\Linter\ChainLinter;
 use ShopwarePluginSkeletonGenerator\Util\Autoload;
 use ShopwarePluginSkeletonGenerator\Util\Str;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,9 +20,7 @@ class PluginSkeletonGenerateCommand extends Command
 {
     public function __construct(
         private readonly Generator $generator,
-        private readonly LinterInterface $phpLinter,
-        private readonly LinterInterface $xmlLinter,
-        private readonly LinterInterface $jsonLinter,
+        private readonly ChainLinter $chainLinter,
     ) {
         parent::__construct();
     }
@@ -34,8 +32,7 @@ class PluginSkeletonGenerateCommand extends Command
             ->addOption('static', 's', InputOption::VALUE_NONE, 'Check if the plugin is static')
             ->addOption('headless', 'H', InputOption::VALUE_NONE, 'Check if the plugin is compatible for headless project (without Storefront module)')
             ->addOption('additionalBundle', 'ab', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Create an additional bundle for section like Storefront, Administration, Core, Elasticsearch ecc.', [])
-            ->addOption('append', null, InputOption::VALUE_NONE, 'Update an existing bundle appending one or more additional bundle ("additionalBundle" option is mandatory in this case)')
-        ;
+            ->addOption('append', null, InputOption::VALUE_NONE, 'Update an existing bundle appending one or more additional bundle ("additionalBundle" option is mandatory in this case)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -85,9 +82,9 @@ class PluginSkeletonGenerateCommand extends Command
                 $append,
             );
 
-            $this->phpLinter->lint($pluginPath);
-            $this->xmlLinter->lint($pluginPath);
-            $this->jsonLinter->lint($pluginPath);
+            foreach ($this->chainLinter->getLinters() as $linter) {
+                $linter->lint($pluginPath);
+            }
         } catch (Exception $e) {
             $output->writeln("<error>{$e->getMessage()}</error>");
 
