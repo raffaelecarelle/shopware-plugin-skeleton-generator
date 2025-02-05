@@ -144,7 +144,7 @@ class CodeManipulator
         return $shortClassName;
     }
 
-    public function addNodeToAdditionalBundlesMethod(ArrayItem $newNode): void
+    private function addNodeToAdditionalBundlesMethod(ArrayItem $newNode): void
     {
         $classNode = $this->getClassNode();
 
