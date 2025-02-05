@@ -15,7 +15,7 @@ class <?php echo $pluginName; ?> extends Plugin
     {
         <?php echo "return [\n"; ?>
             <?php foreach ($additionalBundles as $bundleName) {?>
-            new<?php echo $bundleName; ?>(),
+            new <?php echo $bundleName; ?>(),
             <?php } ?>
         <?php echo '];'; ?>
     }

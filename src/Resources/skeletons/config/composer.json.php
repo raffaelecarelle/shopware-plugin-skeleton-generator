@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "shopware/core": "~<?php echo $shopwareVersion; ?>",
-        "shopware/administration": "~<?php echo $shopwareVersion; ?>",
+        "shopware/administration": "~<?php echo $shopwareVersion; ?>"<?php if ($withStorefront) { ?>,<?php } ?>
         <?php if ($withStorefront) { ?>
         "shopware/storefront": "~<?php echo $shopwareVersion; ?>"
         <?php } ?>
