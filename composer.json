@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "laminas/laminas-code": "^4.16",
+        "roave/better-reflection": "^6.54",
         "shopware/administration": "v6.6.9.0",
         "shopware/core": "v6.6.9.0"
     },

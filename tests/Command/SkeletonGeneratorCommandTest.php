@@ -28,7 +28,6 @@ class SkeletonGeneratorCommandTest extends TestCase
 
     public function testExecuteWithPluginName(): void
     {
-        // @phpstan-ignore-next-line
         $this->commandTester->execute(['fullyQualifiedPluginName' => Example::class], ['capture_stderr_separately' => true]);
         $this->commandTester->assertCommandIsSuccessful();
 
@@ -49,7 +48,6 @@ class SkeletonGeneratorCommandTest extends TestCase
     public function testExecuteWithHeadlessFlag(): void
     {
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--headless' => true,
         ], ['capture_stderr_separately' => true]);
@@ -73,7 +71,6 @@ class SkeletonGeneratorCommandTest extends TestCase
     public function testExecuteWithAdditionalBundles(): void
     {
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--additionalBundle' => ['Core', 'Administration'],
         ], ['capture_stderr_separately' => true]);
@@ -100,7 +97,6 @@ class SkeletonGeneratorCommandTest extends TestCase
     public function testExecuteWithStaticFlag(): void
     {
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--static' => true,
         ], ['capture_stderr_separately' => true]);
@@ -125,7 +121,6 @@ class SkeletonGeneratorCommandTest extends TestCase
         $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
 
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
         ], ['capture_stderr_separately' => true]);
 
@@ -139,7 +134,6 @@ class SkeletonGeneratorCommandTest extends TestCase
         $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
 
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--append' => true,
         ], ['capture_stderr_separately' => true]);
@@ -150,7 +144,6 @@ class SkeletonGeneratorCommandTest extends TestCase
     public function testExecuteAppendOptionNonExistentPluginShouldGiveError(): void
     {
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--append' => true,
             '--additionalBundle' => ['Elasticsearch'],
@@ -166,7 +159,6 @@ class SkeletonGeneratorCommandTest extends TestCase
         $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
 
         $this->commandTester->execute([
-            // @phpstan-ignore-next-line
             'fullyQualifiedPluginName' => Example::class,
             '--append' => true,
             '--additionalBundle' => ['Elasticsearch'],
@@ -182,6 +174,9 @@ class SkeletonGeneratorCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $filesystem = new Filesystem();
+        $filesystem->copy(__DIR__ . '/../Fixtures/App/Example.php', __DIR__ . '/../Fixtures/App/Example.php.bk', true);
 
         $this->commandTester = new CommandTester(new PluginSkeletonGenerateCommand(
             new Generator(
@@ -200,5 +195,6 @@ class SkeletonGeneratorCommandTest extends TestCase
     {
         $filesystem = new Filesystem();
         $filesystem->remove(__DIR__ . '/../Fixtures/custom');
+        $filesystem->rename(__DIR__ . '/../Fixtures/App/Example.php.bk', __DIR__ . '/../Fixtures/App/Example.php', true);
     }
 }
