@@ -117,15 +117,15 @@ class Generator
                 'additionalBundleName' => $additionalBundleName,
             ]);
 
-            $this->dumpFile("$pluginDir/$pluginName/src/$additionalBundleName/$pluginName$additionalBundleName.php", $sectionBundleClassContent);
+            $this->dumpFile("$pluginDir/$pluginName/src/$additionalBundleName/$additionalBundleName.php", $sectionBundleClassContent);
 
             $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php');
 
             $this->dumpFile("$pluginDir/$pluginName/src/$additionalBundleName/Resources/config/routes.xml", $routesContent);
 
             $servicesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/services.xml.php', [
-                'namespace' => $namespace . '\\' . $pluginName . $additionalBundleName,
-                'pluginName' => $pluginName . $additionalBundleName,
+                'namespace' => $namespace . '\\' . $additionalBundleName,
+                'pluginName' => $additionalBundleName,
                 'additionalBundleName' => $additionalBundleName,
             ]);
 
@@ -144,7 +144,7 @@ class Generator
             );
 
             foreach ($additionalBundles as $additionalBundleName) {
-                $codeManipulator->addAdditionalBundle($namespace . '\\' . $pluginName . $additionalBundleName);
+                $codeManipulator->addAdditionalBundle($namespace . '\\' . $additionalBundleName);
                 $this->dumpFile($classInfo->getFileName(), $codeManipulator->getSourceCode());
             }
         }

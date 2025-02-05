@@ -8,6 +8,8 @@
         <service id="ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand">
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Generator\Generator"/>
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Linter\PhpLinter"/>
+            <argument type="service" id="ShopwarePluginSkeletonGenerator\Linter\XmlLinter"/>
+            <argument type="service" id="ShopwarePluginSkeletonGenerator\Linter\JsonLinter"/>
             <tag name="console.command"/>
         </service>
 
@@ -19,6 +21,12 @@
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Linter\PhpLinter">
+        </service>
+
+        <service id="ShopwarePluginSkeletonGenerator\Linter\XmlLinter">
+        </service>
+
+        <service id="ShopwarePluginSkeletonGenerator\Linter\JsonLinter">
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender">

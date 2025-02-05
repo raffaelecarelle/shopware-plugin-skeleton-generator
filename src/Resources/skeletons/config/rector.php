@@ -27,8 +27,6 @@ return RectorConfig::configure()
         PHPUnitSetList::PHPUNIT_110,
         ShopwareSetList::SHOPWARE_6_6_0,
     ])
-    ->withRules(
-        [
-            ReadOnlyClassRector::class,
-        ],
-    );
+    ->withRules([
+        ReadOnlyClassRector::class,
+    ]);

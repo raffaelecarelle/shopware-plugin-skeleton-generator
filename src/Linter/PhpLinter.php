@@ -85,7 +85,7 @@ final class PhpLinter implements LinterInterface
 
         // No config provided and no project dist config - use our config
         if (null === $this->phpCsFixerConfigPath) {
-            $this->phpCsFixerConfigPath = \sprintf('%s/config/php-cs-fixer.config.php', \dirname(__DIR__, 2));
+            $this->phpCsFixerConfigPath = \sprintf('%s/config/.php-cs-fixer.config.php', \dirname(__DIR__));
 
             return;
         }

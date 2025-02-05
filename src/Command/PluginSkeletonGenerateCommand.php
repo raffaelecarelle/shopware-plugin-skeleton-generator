@@ -20,7 +20,9 @@ class PluginSkeletonGenerateCommand extends Command
 {
     public function __construct(
         private readonly Generator $generator,
-        private readonly LinterInterface $linter,
+        private readonly LinterInterface $phpLinter,
+        private readonly LinterInterface $xmlLinter,
+        private readonly LinterInterface $jsonLinter,
     ) {
         parent::__construct();
     }
@@ -83,7 +85,9 @@ class PluginSkeletonGenerateCommand extends Command
                 $append,
             );
 
-            $this->linter->lint($pluginPath);
+            $this->phpLinter->lint($pluginPath);
+            $this->xmlLinter->lint($pluginPath);
+            $this->jsonLinter->lint($pluginPath);
         } catch (Exception $e) {
             $output->writeln("<error>{$e->getMessage()}</error>");
 
