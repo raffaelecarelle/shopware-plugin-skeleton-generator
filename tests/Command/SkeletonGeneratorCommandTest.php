@@ -533,6 +533,19 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Controller/.gitkeep');
     }
 
+    public function testExecuteConfigOption(): void
+    {
+        $fs = new Filesystem();
+
+        $this->commandTester->execute([
+            'fullyQualifiedPluginName' => Example::class,
+            '--config' => true,
+        ], ['capture_stderr_separately' => true]);
+
+        $this->commandTester->assertCommandIsSuccessful();
+        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/config.xml');
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

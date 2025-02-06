@@ -32,6 +32,7 @@ class Generator
         bool $headless = false,
         bool $static = false,
         bool $append = false,
+        bool $config = false,
     ): string {
         $pluginDir = $this->kernelPluginLoader->getPluginDir($this->projectDir);
 
@@ -78,6 +79,10 @@ class Generator
             ]);
 
             $this->dumpFile($pluginDir . '/' . $pluginName . '/tests/TestBootstrap.php', $testBootstrapContent);
+
+            if ($config) {
+                $this->copyFile(__DIR__ . '/../Resources/skeletons/config/config.xml', $pluginDir . '/' . $pluginName . '/src/Resources/config/config.xml');
+            }
 
             if ([] === $additionalBundles) {
                 $routesContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/config/routes.xml.php');
