@@ -42,4 +42,10 @@ $ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --additiona
 $ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --append --additionalBundle=Core --additionalBundle=Administration
 ```
 
+### Create config file of the plugin (pluginDir/src/Resources/config/config.xml)
+
+```console
+$ bin/console plugin:skeleton:generate Full\\\Qualified\\\PluginName --config
+```
+
 
