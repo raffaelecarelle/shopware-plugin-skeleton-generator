@@ -2,7 +2,7 @@
     "name": "raffaelecarelle/shopware-plugin-skeleton-generator",
     "description": "A tool to generate a standardized skeleton structure for developing Shopware plugins, enabling developers to quickly start and streamline the development process.",
     "type": "shopware-platform-plugin",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "license": "MIT",
     "authors": [
         {
@@ -12,8 +12,8 @@
     ],
     "require": {
         "roave/better-reflection": "^6.54",
-        "shopware/administration": "~v6.6",
-        "shopware/core": "~v6.6"
+        "shopware/administration": "~v6.6.0",
+        "shopware/core": "~v6.6.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
