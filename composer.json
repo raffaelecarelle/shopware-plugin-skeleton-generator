@@ -12,8 +12,8 @@
     ],
     "require": {
         "roave/better-reflection": "^6.54",
-        "shopware/administration": "v6.6.9.0",
-        "shopware/core": "v6.6.9.0"
+        "shopware/administration": "~v6.6",
+        "shopware/core": "~v6.6"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64",
