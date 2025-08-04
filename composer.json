@@ -22,7 +22,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0.1",
         "phpstan/phpstan-phpunit": "^2.0.4",
         "phpstan/phpstan-strict-rules": "^2.0.3",
-        "phpunit/phpunit": "^11.4.2",
+        "phpunit/phpunit": "^12.3.0",
         "shopwarelabs/phpstan-shopware": "^0.1.3"
     },
     "autoload": {
