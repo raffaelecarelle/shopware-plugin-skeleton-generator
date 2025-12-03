@@ -45,6 +45,6 @@ class AutoloadTest extends TestCase
     public function testGetShopwareInstalledVersion(): void
     {
         $actualVersion = Autoload::getShopwareInstalledVersion();
-        self::assertEquals('6.6.9.0', $actualVersion);
+        self::assertStringContainsString('6.7', $actualVersion);
     }
 }

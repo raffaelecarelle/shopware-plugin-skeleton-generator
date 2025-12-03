@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace ShopwarePluginSkeletonGenerator\Linter;
 
 use DOMDocument;
+use League\Flysystem\FilesystemOperator;
 use Override;
 use Symfony\Component\Finder\Finder;
 
-final class XmlLinter implements LinterInterface
+final readonly class XmlLinter implements LinterInterface
 {
+    public function __construct(
+        private FilesystemOperator $filesystem,
+        private string $projectDir,
+    ) {}
+
     #[Override]
     public function lint(array | string $templateFilePath): void
     {
@@ -18,11 +24,17 @@ final class XmlLinter implements LinterInterface
         $finder->name('*.xml');
 
         foreach ($finder->getIterator() as $file) {
+            $path = $this->getRelativePath($file->getPathname());
             $dom = new DOMDocument();
             $dom->preserveWhiteSpace = false;
-            $dom->loadXML((string) file_get_contents($file->getPathname()));
+            $dom->loadXML($this->filesystem->read($path));
             $dom->formatOutput = true;
-            file_put_contents($file->getPathname(), $dom->saveXML());
+            $this->filesystem->write($path, (string) $dom->saveXML());
         }
+    }
+
+    private function getRelativePath(string $path): string
+    {
+        return str_replace($this->projectDir . '/', '', $path);
     }
 }
