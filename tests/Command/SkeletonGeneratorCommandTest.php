@@ -101,9 +101,9 @@ class SkeletonGeneratorCommandTest extends TestCase
                 "version": "1.0.0",
                 "license": "MIT",
                 "require": {
-                    "shopware/core": "~6.6.9.0",
-                    "shopware/administration": "~6.6.9.0",
-                    "shopware/storefront": "~6.6.9.0"
+                    "shopware/core": "~6.7.5.0",
+                    "shopware/administration": "~6.7.5.0",
+                    "shopware/storefront": "~6.7.5.0"
                 },
                 "require-dev": {
                     "friendsofphp/php-cs-fixer": "^3.64",
@@ -313,8 +313,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 "version": "1.0.0",
                 "license": "MIT",
                 "require": {
-                    "shopware/core": "~6.6.9.0",
-                    "shopware/administration": "~6.6.9.0"
+                    "shopware/core": "~6.7.5.0",
+                    "shopware/administration": "~6.7.5.0"
                 },
                 "require-dev": {
                     "friendsofphp/php-cs-fixer": "^3.64",
