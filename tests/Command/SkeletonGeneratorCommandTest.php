@@ -8,6 +8,7 @@ use App\Example;
 use Composer\Autoload\ClassLoader;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
+use Shopware\Core\Framework\Plugin;
 use ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
 use ShopwarePluginSkeletonGenerator\Linter\ChainLinter;
@@ -15,12 +16,15 @@ use ShopwarePluginSkeletonGenerator\Linter\JsonLinter;
 use ShopwarePluginSkeletonGenerator\Linter\PhpLinter;
 use ShopwarePluginSkeletonGenerator\Linter\XmlLinter;
 use ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender;
+use ShopwarePluginSkeletonGenerator\Util\Autoload;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
 class SkeletonGeneratorCommandTest extends TestCase
 {
     private CommandTester $commandTester;
+
+    private string $shopwareVersion;
 
     public function testExecuteWithNoArguments(): void
     {
@@ -93,7 +97,7 @@ class SkeletonGeneratorCommandTest extends TestCase
         self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml');
         self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml'));
 
-        $expected = <<<'EOF'
+        $expected = <<<EOF
             {
                 "name": "example/example",
                 "description": "",
@@ -101,9 +105,9 @@ class SkeletonGeneratorCommandTest extends TestCase
                 "version": "1.0.0",
                 "license": "MIT",
                 "require": {
-                    "shopware/core": "~6.7.5.0",
-                    "shopware/administration": "~6.7.5.0",
-                    "shopware/storefront": "~6.7.5.0"
+                    "shopware/core": "~{$this->shopwareVersion}",
+                    "shopware/administration": "~{$this->shopwareVersion}",
+                    "shopware/storefront": "~{$this->shopwareVersion}"
                 },
                 "require-dev": {
                     "friendsofphp/php-cs-fixer": "^3.64",
@@ -117,12 +121,12 @@ class SkeletonGeneratorCommandTest extends TestCase
                 },
                 "autoload": {
                     "psr-4": {
-                        "App\\": "src/"
+                        "App\\\": "src/"
                     }
                 },
                 "autoload-dev": {
                     "psr-4": {
-                        "App\\Tests\\": "tests/"
+                        "App\\\Tests\\\": "tests/"
                     }
                 },
                 "config": {
@@ -133,7 +137,7 @@ class SkeletonGeneratorCommandTest extends TestCase
                     }
                 },
                 "extra": {
-                    "shopware-plugin-class": "App\\Example",
+                    "shopware-plugin-class": "App\\\Example",
                     "plugin-icon": "src/Resources/config/plugin-icon.png",
                     "copyright": "(c) by YourCompany",
                     "label": {
@@ -305,7 +309,7 @@ class SkeletonGeneratorCommandTest extends TestCase
 
         $this->commandTester->assertCommandIsSuccessful();
 
-        $expected = <<<'EOF'
+        $expected = <<<EOF
             {
                 "name": "example/example",
                 "description": "",
@@ -313,8 +317,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 "version": "1.0.0",
                 "license": "MIT",
                 "require": {
-                    "shopware/core": "~6.7.5.0",
-                    "shopware/administration": "~6.7.5.0"
+                    "shopware/core": "~{$this->shopwareVersion}",
+                    "shopware/administration": "~{$this->shopwareVersion}"
                 },
                 "require-dev": {
                     "friendsofphp/php-cs-fixer": "^3.64",
@@ -328,12 +332,12 @@ class SkeletonGeneratorCommandTest extends TestCase
                 },
                 "autoload": {
                     "psr-4": {
-                        "App\\": "src/"
+                        "App\\\": "src/"
                     }
                 },
                 "autoload-dev": {
                     "psr-4": {
-                        "App\\Tests\\": "tests/"
+                        "App\\\Tests\\\": "tests/"
                     }
                 },
                 "config": {
@@ -344,7 +348,7 @@ class SkeletonGeneratorCommandTest extends TestCase
                     }
                 },
                 "extra": {
-                    "shopware-plugin-class": "App\\Example",
+                    "shopware-plugin-class": "App\\\Example",
                     "plugin-icon": "src/Resources/config/plugin-icon.png",
                     "copyright": "(c) by YourCompany",
                     "label": {
@@ -549,6 +553,8 @@ class SkeletonGeneratorCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->shopwareVersion = Autoload::getShopwareInstalledVersion();
 
         $filesystem = new Filesystem();
         $filesystem->copy(__DIR__ . '/../Fixtures/App/Example.php', __DIR__ . '/../Fixtures/App/Example.php.bk', true);
