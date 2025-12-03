@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace ShopwarePluginSkeletonGenerator\Generator;
 
 use Exception;
-use Roave\BetterReflection\BetterReflection;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader;
 use ShopwarePluginSkeletonGenerator\Render\TemplateRenderInterface;
 use ShopwarePluginSkeletonGenerator\Util\Autoload;
 use ShopwarePluginSkeletonGenerator\Util\CodeManipulator;
 use ShopwarePluginSkeletonGenerator\Util\Str;
-use Symfony\Component\Filesystem\Filesystem;
 
 class Generator
 {
     public function __construct(
         private readonly KernelPluginLoader $kernelPluginLoader,
         private readonly TemplateRenderInterface $templateRender,
-        private readonly Filesystem $filesystem,
+        private readonly FilesystemOperator $filesystem,
         private readonly string $projectDir,
     ) {}
 
@@ -40,11 +39,11 @@ class Generator
             $pluginDir = \dirname($pluginDir) . '/static-plugins';
         }
 
-        if ( ! $append && $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
+        if ( ! $append && $this->filesystem->directoryExists($this->getRelativePath($pluginDir . '/' . $pluginName))) {
             throw new Exception(\sprintf('Plugin "%s" already exists.', $pluginName));
         }
 
-        if ($append && ! $this->filesystem->exists($pluginDir . '/' . $pluginName)) {
+        if ($append && ! $this->filesystem->directoryExists($this->getRelativePath($pluginDir . '/' . $pluginName))) {
             throw new Exception(\sprintf('Plugin "%s" does not exist. Cannot append bundles!', $pluginName));
         }
 
@@ -52,7 +51,7 @@ class Generator
             $pluginClassContent = $this->templateRender->render(__DIR__ . '/../Resources/skeletons/PluginClass.tpl.php', [
                 'namespace' => $namespace,
                 'pluginName' => $pluginName,
-                'additionalBundles' => $additionalBundles,
+                'additionalBundles' => [], // Let the CodeManipulator handle this
             ]);
 
             $this->dumpFile($pluginDir . '/' . $pluginName . '/src/' . $pluginName . '.php', $pluginClassContent);
@@ -112,7 +111,7 @@ class Generator
     private function appendAdditionalBundles(array $additionalBundles, string $namespace, string $pluginDir, string $pluginName): void
     {
         foreach ($additionalBundles as $additionalBundleName) {
-            if ($this->filesystem->exists("$pluginDir/$pluginName/src/$additionalBundleName")) {
+            if ($this->filesystem->directoryExists($this->getRelativePath("$pluginDir/$pluginName/src/$additionalBundleName"))) {
                 continue;
             }
 
@@ -140,28 +139,33 @@ class Generator
         }
 
         if ([] !== $additionalBundles) {
-            $classInfo = (new BetterReflection())
-                ->reflector()
-                ->reflectClass($namespace . '\\' . $pluginName);
+            $pluginClassPath = \sprintf('%s/%s/src/%s.php', $pluginDir, $pluginName, $pluginName);
 
             $codeManipulator = new CodeManipulator(
-                $this->filesystem->readFile($classInfo->getFileName()),
+                $this->filesystem->read($this->getRelativePath($pluginClassPath)),
             );
 
             foreach ($additionalBundles as $additionalBundleName) {
-                $codeManipulator->addAdditionalBundle($namespace . '\\' . $additionalBundleName);
-                $this->dumpFile($classInfo->getFileName(), $codeManipulator->getSourceCode());
+                $bundleFqcn = $namespace . '\\' . $additionalBundleName . '\\' . $additionalBundleName;
+                $codeManipulator->addAdditionalBundle($bundleFqcn);
             }
+
+            $this->dumpFile($pluginClassPath, $codeManipulator->getSourceCode());
         }
     }
 
     private function dumpFile(string $path, string $content): void
     {
-        $this->filesystem->dumpFile($path, $content);
+        $this->filesystem->write($this->getRelativePath($path), $content);
     }
 
     private function copyFile(string $origFile, string $destFile): void
     {
-        $this->filesystem->copy($origFile, $destFile);
+        $this->filesystem->writeStream($this->getRelativePath($destFile), fopen($origFile, 'r'));
+    }
+
+    private function getRelativePath(string $path): string
+    {
+        return str_replace($this->projectDir . '/', '', $path);
     }
 }

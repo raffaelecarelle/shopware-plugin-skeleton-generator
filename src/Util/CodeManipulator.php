@@ -13,6 +13,7 @@ use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
+use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Namespace_;
@@ -28,16 +29,13 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use PhpParser\Token;
 use RuntimeException;
+use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
 
 /**
  * @internal
  */
 final class CodeManipulator
 {
-    private const string CONTEXT_OUTSIDE_CLASS = 'outside_class';
-
-    private const string CONTEXT_ARRAY = 'array';
-
     private readonly Parser $parser;
 
     private readonly Standard $printer;
@@ -73,6 +71,7 @@ final class CodeManipulator
 
     public function addAdditionalBundle(string $bundleName): void
     {
+        $this->addUseStatementIfNecessary(AdditionalBundleParameters::class);
         $this->addUseStatementIfNecessary($bundleName);
 
         $node = new ArrayItem(
@@ -139,7 +138,7 @@ final class CodeManipulator
             $namespaceNode->stmts,
             $targetIndex,
             0,
-            $addLineBreak ? [$newUseNode, $this->createBlankLineNode(self::CONTEXT_OUTSIDE_CLASS)] : [$newUseNode],
+            $addLineBreak ? [$newUseNode, $this->createBlankLineNodeForOutsideClass()] : [$newUseNode],
         );
 
         $this->updateSourceCodeFromNewStmts();
@@ -157,6 +156,7 @@ final class CodeManipulator
             $targetNode = (new Method('getAdditionalBundles'))
                 ->makePublic()
                 ->setReturnType('array')
+                ->addParam(new Param(new Variable('parameters'), null, new Name('AdditionalBundleParameters')))
                 ->addStmt(new Return_(new Array_()))
                 ->getNode()
             ;
@@ -167,8 +167,7 @@ final class CodeManipulator
         $collectionArrayNode = $this->findFirstNode(fn ($node): bool => $node instanceof Array_, [$targetNode]);
 
         $whiteSpace = new ArrayItem(
-            // @phpstan-ignore-next-line
-            $this->createBlankLineNode(self::CONTEXT_ARRAY),
+            $this->createBlankLineNodeForArray(),
         );
 
         if ($collectionArrayNode instanceof Array_) {
@@ -183,19 +182,20 @@ final class CodeManipulator
         $this->updateSourceCodeFromNewStmts();
     }
 
-    private function createBlankLineNode(string $context): Use_ | Variable
+    private function createBlankLineNodeForOutsideClass(): Use_
     {
-        return match ($context) {
-            self::CONTEXT_OUTSIDE_CLASS => (new Builder\Use_(
-                '__EXTRA__LINE',
-                Use_::TYPE_NORMAL,
-            ))
-                ->getNode(),
-            self::CONTEXT_ARRAY => new Variable(
-                '__NEW__LINE',
-            ),
-            default => throw new Exception('Unknown context: ' . $context),
-        };
+        return (new Builder\Use_(
+            '__EXTRA__LINE',
+            Use_::TYPE_NORMAL,
+        ))
+            ->getNode();
+    }
+
+    private function createBlankLineNodeForArray(): Variable
+    {
+        return new Variable(
+            '__NEW__LINE',
+        );
     }
 
     private function updateSourceCodeFromNewStmts(): void

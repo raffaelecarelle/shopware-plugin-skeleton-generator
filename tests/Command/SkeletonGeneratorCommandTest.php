@@ -6,9 +6,10 @@ namespace ShopwarePluginSkeletonGenerator\Tests\Command;
 
 use App\Example;
 use Composer\Autoload\ClassLoader;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
-use Shopware\Core\Framework\Plugin;
 use ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand;
 use ShopwarePluginSkeletonGenerator\Generator\Generator;
 use ShopwarePluginSkeletonGenerator\Linter\ChainLinter;
@@ -18,13 +19,16 @@ use ShopwarePluginSkeletonGenerator\Linter\XmlLinter;
 use ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender;
 use ShopwarePluginSkeletonGenerator\Util\Autoload;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Filesystem\Filesystem;
 
 class SkeletonGeneratorCommandTest extends TestCase
 {
     private CommandTester $commandTester;
 
     private string $shopwareVersion;
+
+    private Filesystem $filesystem;
+
+    private string $projectDir;
 
     public function testExecuteWithNoArguments(): void
     {
@@ -55,8 +59,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             $loader->addPsr4('App\\Tests\\', __DIR__);
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/tests/TestBootstrap.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/tests/TestBootstrap.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/tests/TestBootstrap.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/tests/TestBootstrap.php'));
 
         $expected = <<<'EOF'
             <?php
@@ -70,8 +74,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             class Example extends Plugin {}
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Example.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Example.php'));
 
         $expected = <<<'EOF'
             <?xml version="1.0"?>
@@ -83,8 +87,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             </container>
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/services.xml');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/services.xml'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Resources/config/services.xml');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Resources/config/services.xml'));
 
         $expected = <<<'EOF'
             <?xml version="1.0" encoding="UTF-8"?>
@@ -94,8 +98,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             </routes>
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/routes.xml'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Resources/config/routes.xml');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Resources/config/routes.xml'));
 
         $expected = <<<EOF
             {
@@ -161,8 +165,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 }
             }
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/composer.json');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/composer.json'));
 
         $expected = <<<'EOF'
             <?php
@@ -193,8 +197,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 ->setFinder($finder);
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/.php-cs-fixer.dist.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/.php-cs-fixer.dist.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/.php-cs-fixer.dist.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/.php-cs-fixer.dist.php'));
 
         $expected = <<<'EOF'
             <?php
@@ -231,8 +235,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 ]);
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/rector.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/rector.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/rector.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/rector.php'));
 
         $expected = <<<'EOF'
             includes:
@@ -245,8 +249,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                     - %currentWorkingDirectory%/tests
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan.neon');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan.neon'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/phpstan.neon');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/phpstan.neon'));
 
         $expected = <<<'EOF'
             <?xml version="1.0" encoding="UTF-8"?>
@@ -292,12 +296,12 @@ class SkeletonGeneratorCommandTest extends TestCase
 
             EOF;
 
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpunit.xml.dist');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/phpunit.xml.dist'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/phpunit.xml.dist');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/phpunit.xml.dist'));
 
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/phpstan-baseline.neon');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Route/.gitkeep');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Controller/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/phpstan-baseline.neon');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Route/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Controller/.gitkeep');
     }
 
     public function testExecuteWithHeadlessFlag(): void
@@ -372,8 +376,8 @@ class SkeletonGeneratorCommandTest extends TestCase
                 }
             }
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/composer.json'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/composer.json');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/composer.json'));
     }
 
     public function testExecuteWithAdditionalBundles(): void
@@ -392,27 +396,23 @@ class SkeletonGeneratorCommandTest extends TestCase
 
             namespace App;
 
-            use Override;
+            use App\Administration\Administration;
+            use App\Core\Core;
+            use Shopware\Core\Framework\Parameter\AdditionalBundleParameters;
             use Shopware\Core\Framework\Plugin;
 
             class Example extends Plugin
             {
-                /**
-                 * Method auto-generated by PluginSkeletonGenerator.
-                 */
-                #[Override]
                 public function getAdditionalBundles(AdditionalBundleParameters $parameters): array
                 {
-                    return [
-                        new Core(),
-                        new Administration(),
-                    ];
+                    return [new Core(),
+                        new Administration()];
                 }
             }
-
+            
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Example.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Example.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Example.php'));
 
         $expected = <<<'EOF'
             <?xml version="1.0"?>
@@ -424,8 +424,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             </container>
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Core/Resources/config/services.xml');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Core/Resources/config/services.xml'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Core/Resources/config/services.xml');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Core/Resources/config/services.xml'));
 
         $expected = <<<'EOF'
             <?xml version="1.0"?>
@@ -437,8 +437,8 @@ class SkeletonGeneratorCommandTest extends TestCase
             </container>
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Resources/config/services.xml');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Resources/config/services.xml'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Administration/Resources/config/services.xml');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Administration/Resources/config/services.xml'));
 
         $expected = <<<'EOF'
             <?php
@@ -452,11 +452,11 @@ class SkeletonGeneratorCommandTest extends TestCase
             class Administration extends Bundle {}
 
             EOF;
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Administration.php');
-        self::assertSame($expected, file_get_contents(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Administration.php'));
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Administration/Administration.php');
+        self::assertSame($expected, file_get_contents($this->projectDir . '/custom/plugins/Example/src/Administration/Administration.php'));
 
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Route/.gitkeep');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Administration/Controller/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Administration/Route/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Administration/Controller/.gitkeep');
     }
 
     public function testExecuteWithStaticFlag(): void
@@ -468,22 +468,20 @@ class SkeletonGeneratorCommandTest extends TestCase
 
         $this->commandTester->assertCommandIsSuccessful();
 
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Example.php');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Resources/config/services.xml');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/src/Resources/config/routes.xml');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/composer.json');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/.php-cs-fixer.dist.php');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/rector.php');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpstan.neon');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpstan-baseline.neon');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/static-plugins/Example/phpunit.xml.dist');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/src/Example.php');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/src/Resources/config/services.xml');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/src/Resources/config/routes.xml');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/composer.json');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/.php-cs-fixer.dist.php');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/rector.php');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/phpstan.neon');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/phpstan-baseline.neon');
+        self::assertFileExists($this->projectDir . '/custom/static-plugins/Example/phpunit.xml.dist');
     }
 
     public function testExecutePluginAlreadyExistsShouldDoNothing(): void
     {
-        $fs = new Filesystem();
-
-        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
+        $this->filesystem->createDirectory('custom/plugins/Example');
 
         $this->commandTester->execute([
             'fullyQualifiedPluginName' => Example::class,
@@ -494,9 +492,7 @@ class SkeletonGeneratorCommandTest extends TestCase
 
     public function testExecuteAppendOptionWithoutAdditionBundlesShouldGiveError(): void
     {
-        $fs = new Filesystem();
-
-        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
+        $this->filesystem->createDirectory('custom/plugins/Example');
 
         $this->commandTester->execute([
             'fullyQualifiedPluginName' => Example::class,
@@ -519,10 +515,13 @@ class SkeletonGeneratorCommandTest extends TestCase
 
     public function testExecuteAppendOption(): void
     {
-        $fs = new Filesystem();
+        // First, create the plugin
+        $this->commandTester->execute([
+            'fullyQualifiedPluginName' => Example::class,
+        ], ['capture_stderr_separately' => true]);
+        $this->commandTester->assertCommandIsSuccessful();
 
-        $fs->mkdir(__DIR__ . '/../Fixtures/custom/plugins/Example');
-
+        // Then, append to it
         $this->commandTester->execute([
             'fullyQualifiedPluginName' => Example::class,
             '--append' => true,
@@ -530,56 +529,60 @@ class SkeletonGeneratorCommandTest extends TestCase
         ], ['capture_stderr_separately' => true]);
 
         $this->commandTester->assertCommandIsSuccessful();
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Elasticsearch.php');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Resources/config/services.xml');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Resources/config/routes.xml');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Route/.gitkeep');
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Elasticsearch/Controller/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Elasticsearch/Elasticsearch.php');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Elasticsearch/Resources/config/services.xml');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Elasticsearch/Resources/config/routes.xml');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Elasticsearch/Route/.gitkeep');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Elasticsearch/Controller/.gitkeep');
     }
 
     public function testExecuteConfigOption(): void
     {
-        $fs = new Filesystem();
-
         $this->commandTester->execute([
             'fullyQualifiedPluginName' => Example::class,
             '--config' => true,
         ], ['capture_stderr_separately' => true]);
 
         $this->commandTester->assertCommandIsSuccessful();
-        self::assertFileExists(__DIR__ . '/../Fixtures/custom/plugins/Example/src/Resources/config/config.xml');
+        self::assertFileExists($this->projectDir . '/custom/plugins/Example/src/Resources/config/config.xml');
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->projectDir = __DIR__ . '/../Fixtures';
+
         $this->shopwareVersion = Autoload::getShopwareInstalledVersion();
 
-        $filesystem = new Filesystem();
-        $filesystem->copy(__DIR__ . '/../Fixtures/App/Example.php', __DIR__ . '/../Fixtures/App/Example.php.bk', true);
+        $adapter = new LocalFilesystemAdapter($this->projectDir);
+        $this->filesystem = new Filesystem($adapter);
+
+        $this->filesystem->write(
+            'App/Example.php.bk',
+            (string) file_get_contents(__DIR__ . '/../Fixtures/App/Example.php'),
+        );
 
         $this->commandTester = new CommandTester(new PluginSkeletonGenerateCommand(
             new Generator(
                 new StaticKernelPluginLoader(
-                    new ClassLoader(__DIR__ . '/../../vendor'),
+                    new ClassLoader(),
                 ),
                 new SimplePhpTemplateRender(),
-                new Filesystem(),
-                __DIR__ . '/../Fixtures',
+                $this->filesystem,
+                $this->projectDir,
             ),
             new ChainLinter([
                 new PhpLinter(),
-                new XmlLinter(),
-                new JsonLinter(),
+                new XmlLinter($this->filesystem, $this->projectDir),
+                new JsonLinter($this->filesystem, $this->projectDir),
             ]),
         ));
     }
 
     protected function tearDown(): void
     {
-        $filesystem = new Filesystem();
-        $filesystem->remove(__DIR__ . '/../Fixtures/custom');
-        $filesystem->rename(__DIR__ . '/../Fixtures/App/Example.php.bk', __DIR__ . '/../Fixtures/App/Example.php', true);
+        $this->filesystem->deleteDirectory('custom');
+        $this->filesystem->move('App/Example.php.bk', 'App/Example.php');
     }
 }

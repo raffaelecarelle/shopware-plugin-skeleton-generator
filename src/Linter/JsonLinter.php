@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace ShopwarePluginSkeletonGenerator\Linter;
 
+use League\Flysystem\FilesystemOperator;
 use Symfony\Component\Finder\Finder;
 
-final class JsonLinter implements LinterInterface
+final readonly class JsonLinter implements LinterInterface
 {
+    public function __construct(
+        private FilesystemOperator $filesystem,
+        private string $projectDir,
+    ) {}
+
     public function lint(array | string $templateFilePath): void
     {
         $finder = new Finder();
@@ -15,9 +21,15 @@ final class JsonLinter implements LinterInterface
         $finder->name('*.json');
 
         foreach ($finder->getIterator() as $file) {
-            $content = file_get_contents($file->getPathname());
-            $content = json_encode(json_decode((string) $content), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
-            file_put_contents($file->getPathname(), $content);
+            $path = $this->getRelativePath($file->getPathname());
+            $content = $this->filesystem->read($path);
+            $content = json_encode(json_decode($content), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES);
+            $this->filesystem->write($path, (string) $content);
         }
+    }
+
+    private function getRelativePath(string $path): string
+    {
+        return str_replace($this->projectDir . '/', '', $path);
     }
 }

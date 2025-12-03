@@ -5,6 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="shopware_plugin_skeleton_generator.filesystem.project" class="League\Flysystem\Filesystem">
+            <factory service="shopware.filesystem.factory" method="create" />
+            <argument type="collection">
+                <argument key="type">local</argument>
+                <argument key="root">%kernel.project_dir%</argument>
+            </argument>
+        </service>
+
         <service id="ShopwarePluginSkeletonGenerator\Command\PluginSkeletonGenerateCommand">
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Generator\Generator"/>
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Linter\ChainLinter"/>
@@ -14,7 +22,7 @@
         <service id="ShopwarePluginSkeletonGenerator\Generator\Generator">
             <argument type="service" id="Shopware\Core\Framework\Plugin\KernelPluginLoader\KernelPluginLoader"/>
             <argument type="service" id="ShopwarePluginSkeletonGenerator\Render\SimplePhpTemplateRender"/>
-            <argument type="service" id="filesystem"/>
+            <argument type="service" id="shopware_plugin_skeleton_generator.filesystem.project"/>
             <argument>%kernel.project_dir%</argument>
         </service>
 
@@ -23,10 +31,14 @@
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Linter\XmlLinter">
+            <argument type="service" id="shopware_plugin_skeleton_generator.filesystem.project"/>
+            <argument>%kernel.project_dir%</argument>
             <tag name="file.linter"/>
         </service>
 
         <service id="ShopwarePluginSkeletonGenerator\Linter\JsonLinter">
+            <argument type="service" id="shopware_plugin_skeleton_generator.filesystem.project"/>
+            <argument>%kernel.project_dir%</argument>
             <tag name="file.linter"/>
         </service>
 

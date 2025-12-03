@@ -4,34 +4,39 @@ declare(strict_types=1);
 
 namespace ShopwarePluginSkeletonGenerator\Tests\Linter;
 
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
 use ShopwarePluginSkeletonGenerator\Linter\PhpLinter;
 
 class PhpLinterTest extends TestCase
 {
     private string $tmpFilePath;
+    private Filesystem $filesystem;
+    private string $tmpDir;
 
     protected function setUp(): void
     {
-        $this->tmpFilePath = sys_get_temp_dir() . '/example.php';
-        file_put_contents($this->tmpFilePath, "<?php echo 'Hello, World!';");
+        $this->tmpDir = sys_get_temp_dir() . '/linter-test';
+        $adapter = new LocalFilesystemAdapter($this->tmpDir);
+        $this->filesystem = new Filesystem($adapter);
+        $this->tmpFilePath = 'example.php';
+        $this->filesystem->write($this->tmpFilePath, "<?php echo 'Hello, World!';");
     }
 
     protected function tearDown(): void
     {
-        if (file_exists($this->tmpFilePath)) {
-            unlink($this->tmpFilePath);
-        }
+        $this->filesystem->deleteDirectory('/');
     }
 
     public function testLinterForSingleFile(): void
     {
         $linter = new PhpLinter();
-        $linter->lint($this->tmpFilePath);
+        $linter->lint($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertFileExists($this->tmpFilePath);
+        self::assertFileExists($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertStringEqualsFile($this->tmpFilePath, <<<EOF
+        self::assertStringEqualsFile($this->tmpDir . '/' . $this->tmpFilePath, <<<EOF
             <?php
 
             declare(strict_types=1);
@@ -43,11 +48,11 @@ class PhpLinterTest extends TestCase
     public function testLinterForArrayOfFiles(): void
     {
         $linter = new PhpLinter();
-        $linter->lint([$this->tmpFilePath]);
+        $linter->lint([$this->tmpDir . '/' . $this->tmpFilePath]);
 
-        self::assertFileExists($this->tmpFilePath);
+        self::assertFileExists($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertStringEqualsFile($this->tmpFilePath, <<<EOF
+        self::assertStringEqualsFile($this->tmpDir . '/' . $this->tmpFilePath, <<<EOF
             <?php
 
             declare(strict_types=1);
@@ -59,11 +64,11 @@ class PhpLinterTest extends TestCase
     public function testLinterWithCustomBinaryPath(): void
     {
         $linter = new PhpLinter(__DIR__ . '/../../src/Resources/bin/php-cs-fixer.phar');
-        $linter->lint($this->tmpFilePath);
+        $linter->lint($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertFileExists($this->tmpFilePath);
+        self::assertFileExists($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertStringEqualsFile($this->tmpFilePath, <<<EOF
+        self::assertStringEqualsFile($this->tmpDir . '/' . $this->tmpFilePath, <<<EOF
             <?php
 
             declare(strict_types=1);
@@ -75,11 +80,11 @@ class PhpLinterTest extends TestCase
     public function testLinterWithCustomConfigPath(): void
     {
         $linter = new PhpLinter(null, __DIR__ . '/../../.php-cs-fixer.dist.php');
-        $linter->lint($this->tmpFilePath);
+        $linter->lint($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertFileExists($this->tmpFilePath);
+        self::assertFileExists($this->tmpDir . '/' . $this->tmpFilePath);
 
-        self::assertStringEqualsFile($this->tmpFilePath, <<<EOF
+        self::assertStringEqualsFile($this->tmpDir . '/' . $this->tmpFilePath, <<<EOF
             <?php
 
             declare(strict_types=1);
